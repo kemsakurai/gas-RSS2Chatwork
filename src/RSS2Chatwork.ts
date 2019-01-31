@@ -12,16 +12,18 @@ export default class RSS2Chatwork {
   feedUrl: string;
   lastUpdateDate: Date;
   token: string;
+  feedDesc: string;
 
   /**
    * constructor
    * @param roomId
    * @param feedUrl
    */
-  constructor(roomId: string, feedUrl: string, lastUpdateDate: Date) {
+  constructor(roomId: string, feedUrl: string, lastUpdateDate: Date, feedDesc: string) {
     this.roomId = roomId;
     this.feedUrl = feedUrl;
     this.lastUpdateDate = lastUpdateDate;
+    this.feedDesc = feedDesc;
     this.token = Utils.getChatworkToken();
   }
   /**
@@ -32,7 +34,8 @@ export default class RSS2Chatwork {
     let updateDate: Date = this.lastUpdateDate;
     for (let feedItem of feeds) {
       let message;
-      if (this.lastUpdateDate.getTime() > feedItem.time.getTime()) {
+      // msレベルでの誤差が発生するので、1秒加算しておく
+      if (this.lastUpdateDate.getTime() + 1000 >= feedItem.time.getTime()) {
         continue;
       } else {
         let dateString: string = Utilities.formatDate(feedItem.time, 'JST', 'yyyy-MM-dd HH:mm:ss');
@@ -43,15 +46,17 @@ export default class RSS2Chatwork {
           dateString +
           '][/title]' +
           feedItem.link +
+          this.getFeedSummaryOrBlank(feedItem) +
           '[hr]' +
-          feedItem.summary +
+          this.feedDesc +
           '[/info]';
       }
       if (message == '') {
         continue;
       }
       let payload = {
-        body: message
+        body: message,
+        self_unread: '1'
       };
       const options: Object = {
         method: 'post',
@@ -59,11 +64,18 @@ export default class RSS2Chatwork {
         payload: payload
       };
       Utils.fetchAsJson('https://api.chatwork.com/v2/rooms/' + this.roomId + '/messages', options);
-      if (!(updateDate.getTime() > feedItem.time.getTime())) {
+      if (updateDate.getTime() <= feedItem.time.getTime()) {
         updateDate = feedItem.time;
       }
     }
     return updateDate;
+  }
+  /**
+   * getFeedSummaryOrBlank
+   * @param feedItem
+   */
+  private getFeedSummaryOrBlank(feedItem: FeedItem) {
+    return feedItem.summary === '' ? '' : '[hr]' + feedItem.summary;
   }
   /**
    * determineFeedType
@@ -133,19 +145,39 @@ export default class RSS2Chatwork {
     let root = document.getRootElement();
     let items = root.getChild('channel').getChildren('item');
     let feedItems: FeedItem[] = new Array();
+    let parentPubDate = root.getChild('channel').getChild('pubDate');
     for (let i in items) {
-      let link = items[i].getChild('link').getText();
+      let item = items[i];
+      let link = item.getChild('link').getText();
       link = Utils.decodeURIComponentSafety(link);
-      let description = items[i].getChild('description');
-      let item: FeedItem = {
-        title: items[i].getChild('title').getText(),
+      let description = item.getChild('description');
+      let feedItem: FeedItem = {
+        title: item.getChild('title').getText(),
         link: link,
         summary: Utils.getTextOrBlank(description),
-        time: new Date(items[i].getChild('pubDate').getText())
+        time: new Date(this.getPubdate(item, parentPubDate).getText())
       };
-      feedItems.push(item);
+      feedItems.push(feedItem);
     }
     return feedItems;
+  }
+  /**
+   * getPubdate
+   * @param item
+   * @param parentPubDate
+   */
+  private getPubdate(
+    item: GoogleAppsScript.XML_Service.Element,
+    parentPubDate: GoogleAppsScript.XML_Service.Element
+  ) {
+    if (item.getChild('pubDate') != null) {
+      return item.getChild('pubDate');
+    }
+    const dc = XmlService.getNamespace('dc', 'http://purl.org/dc/elements/1.1/');
+    if (item.getChild('date', dc) != null) {
+      return item.getChild('date', dc);
+    }
+    return parentPubDate;
   }
 
   private parseAtom(document: GoogleAppsScript.XML_Service.Document) {

@@ -6,19 +6,20 @@ export const noticeUpdate = (): void => {
   let sheet: GoogleAppsScript.Spreadsheet.Sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
     Utils.getRSSSheetName()
   );
-  let range: GoogleAppsScript.Spreadsheet.Range = sheet.getRange(2, 2, sheet.getLastRow() - 1, 3);
+  let range: GoogleAppsScript.Spreadsheet.Range = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4);
   let feedList: any[][] = range.getValues();
   let lastUpdateDates: any[] = new Array();
   for (let feed of feedList) {
     // roomId、feedUrl の設定がなければ、処理の対象外
-    if (feed[0] == '' || feed[1] == '') {
+    if (feed[0] == '' || feed[1] == '' || feed[2] == '') {
       lastUpdateDates.push('');
       continue;
     }
     let rss2Chatwork: RSS2Chatwork = new RSS2Chatwork(
+      feed[2],
       feed[1],
-      feed[0],
-      feed[2] == '' ? Utils.getYesterday() : new Date(feed[2])
+      feed[3] == '' ? Utils.getYesterday() : new Date(feed[3]),
+      feed[0]
     );
     let entries: FeedItem[] = rss2Chatwork.parseFeed();
     let lastUpdateDate: Date = rss2Chatwork.postMessage(entries);

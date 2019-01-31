@@ -15,8 +15,8 @@ export const getRooms = (): void => {
   let values = new Array();
   for (let room of response) {
     let row = new Array();
-    row.push(room['room_id']);
     row.push(room['name']);
+    row.push(room['room_id']);
     values.push(row);
   }
   const roomSheetName = Utils.getRoomSheetName();

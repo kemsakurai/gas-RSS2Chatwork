@@ -1,5 +1,5 @@
 const KEY = 'trigger';
-const FUNCTION_NAME = 'runPageSpeedTest';
+const FUNCTION_NAME = 'noticeUpdate';
 
 const weekDay = [
   ScriptApp.WeekDay.MONDAY,
