@@ -6,14 +6,18 @@ import { getRooms } from './getRooms';
 import { noticeUpdate } from './noticeUpdate';
 
 function onOpen() {
-  const menu = [
-    { name: 'Initialize', functionName: 'initialize' },
-    { name: 'Input token', functionName: 'inputToken' },
-    { name: 'Get rooms', functionName: 'getRooms' },
-    { name: 'Notice update', functionName: 'noticeUpdate' },
-    { name: 'Schedule', functionName: 'createSchedule' }
-  ];
-  SpreadsheetApp.getActiveSpreadsheet().addMenu('gas-RSS2Chatwork', menu);
+  let ui = SpreadsheetApp.getUi();
+  ui.createMenu('gas-RSS2Chatwork')
+    .addSubMenu(
+      ui
+        .createMenu('Initialize')
+        .addItem('Create config sheets', 'initialize')
+        .addItem('Input token', 'inputToken')
+    )
+    .addSeparator()
+    .addItem('Notice update', 'noticeUpdate')
+    .addItem('Schedule', 'createSchedule')
+    .addToUi();
 }
 
 declare let global: any;
