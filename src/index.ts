@@ -6,17 +6,18 @@ import { getRooms } from './getRooms';
 import { noticeUpdate } from './noticeUpdate';
 
 function onOpen() {
+  var lang = Session.getActiveUserLocale();
   let ui = SpreadsheetApp.getUi();
   ui.createMenu('gas-RSS2Chatwork')
     .addSubMenu(
       ui
-        .createMenu('Initialize')
-        .addItem('Create config sheets', 'initialize')
-        .addItem('Input token', 'inputToken')
+        .createMenu(lang === 'ja' ? '初期設定' : 'Initial setting')
+        .addItem(lang === 'ja' ? '設定シート作成' : 'Create config sheets', 'initialize')
+        .addItem(lang === 'ja' ? 'Token設定' : 'Input token', 'inputToken')
     )
     .addSeparator()
-    .addItem('Notice update', 'noticeUpdate')
-    .addItem('Schedule', 'createSchedule')
+    .addItem(lang === 'ja' ? '更新通知' : 'Notice update', 'noticeUpdate')
+    .addItem(lang === 'ja' ? 'スケジュール実行' : 'Schedule', 'createSchedule')
     .addToUi();
 }
 

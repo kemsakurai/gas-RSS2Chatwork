@@ -190,9 +190,7 @@ export default class RSS2Chatwork {
         .getAttribute('href')
         .getValue();
       if (link.match(/&url=(.*)&ct=ga/)) {
-        link = Utils.decodeURIComponentSafety(
-          link.match(/&url=(.*)&ct=ga/)[0].replace('&url=', '')
-        );
+        link = Utils.decodeURIComponentSafety(link.match(/&url=(.*)&ct=ga/)[1]);
       } else {
         link = Utils.decodeURIComponentSafety(link);
       }
