@@ -14,6 +14,7 @@ function onOpen() {
         .createMenu(lang === 'ja' ? '初期設定' : 'Initial setting')
         .addItem(lang === 'ja' ? '設定シート作成' : 'Create config sheets', 'initialize')
         .addItem(lang === 'ja' ? 'Token設定' : 'Input token', 'inputToken')
+        .addItem(lang === 'ja' ? 'ルーム一覧を取得' : 'Get rooms', 'getRooms')
     )
     .addSeparator()
     .addItem(lang === 'ja' ? '更新通知' : 'Notice update', 'noticeUpdate')
