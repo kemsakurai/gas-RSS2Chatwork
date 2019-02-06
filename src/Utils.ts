@@ -62,13 +62,6 @@ export default class Utils {
     return 'Room';
   }
   /**
-   * getMethodName
-   */
-  public static getMethodName() {
-    let err = new Error();
-    return /at \w+\.(\w+)/.exec(err.stack.split('\n')[2])[1];
-  }
-  /**
    * decodeURIComponentSafety
    * @param link
    */
