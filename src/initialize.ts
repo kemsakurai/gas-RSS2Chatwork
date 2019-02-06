@@ -1,7 +1,7 @@
 import Utils from './Utils';
 
 export const initialize = (): void => {
-  Logger.log('initialize start');
+  console.log('initialize start');
   const rssSheetName: string = Utils.getRSSSheetName();
   let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(rssSheetName);
   if (!sheet) {
@@ -28,5 +28,5 @@ export const initialize = (): void => {
     headers.push('RoomId');
     range.setValues([headers]);
   }
-  Logger.log('initialize end');
+  console.log('initialize end');
 };

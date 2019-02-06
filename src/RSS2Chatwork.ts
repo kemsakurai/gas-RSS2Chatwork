@@ -115,10 +115,11 @@ export default class RSS2Chatwork {
     } else if (feedType == 'rss2') {
       return this.parseRSS20(document);
     } else {
+      console.warn('Illegal feed format [URL]:%s', this.feedUrl);
       return new Array();
     }
   }
-
+  
   private parseRSS10(document: GoogleAppsScript.XML_Service.Document) {
     let root = document.getRootElement();
     const rss = XmlService.getNamespace('http://purl.org/rss/1.0/');

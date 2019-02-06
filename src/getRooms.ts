@@ -1,11 +1,10 @@
 import Utils from './Utils';
 
 export const getRooms = (): void => {
-  Logger.log('getRooms start');
+  console.info('getRooms start');
 
   let token: string = Utils.getChatworkToken();
   Utils.checkNotEmpty(token, 'token が 未設定です。token を設定してください。');
-
   const options: Object = {
     method: 'get',
     headers: { 'X-ChatWorkToken': token }
@@ -29,5 +28,5 @@ export const getRooms = (): void => {
   // set values
   range = sheet.getRange(2, 1, values.length, 2);
   range.setValues(values);
-  Logger.log('getRooms end');
+  console.info('getRooms end');
 };

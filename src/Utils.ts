@@ -84,7 +84,8 @@ export default class Utils {
   public static getTextOrBlank(element): string {
     let result = '';
     if (element) {
-      result = element.getText();
+      // htmlタグを除去する
+      result = element.getText().replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '');
     }
     return result;
   }
