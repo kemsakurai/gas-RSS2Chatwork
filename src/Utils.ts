@@ -19,6 +19,26 @@ export default class Utils {
     return XmlService.parse(response.getContentText());
   }
   /**
+   * setNumberOfDescription
+   * @param number
+   */
+  public static setNumberOfDescription(number: string): void {
+    PropertiesService.getScriptProperties().setProperty('NUMBER_OF_DESCRIPTION', number);
+  }
+
+  /**
+   * getNumberOfDescription
+   */
+  public static getNumberOfDescription(): number {
+    let numberOfDescription = parseInt(
+      PropertiesService.getScriptProperties().getProperty('NUMBER_OF_DESCRIPTION')
+    );
+    if (isNaN(numberOfDescription)) {
+      numberOfDescription = -1;
+    }
+    return numberOfDescription;
+  }
+  /**
    * setChatworkToken
    * @param token
    */

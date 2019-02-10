@@ -25,6 +25,7 @@ export default class RSS2Chatwork {
     this.lastUpdateDate = lastUpdateDate;
     this.feedDesc = feedDesc;
     this.token = Utils.getChatworkToken();
+    Utils.checkNotEmpty(this.token, 'token が 未設定です。token を設定してください。');
   }
   /**
    * postMessage
@@ -75,7 +76,16 @@ export default class RSS2Chatwork {
    * @param feedItem
    */
   private getFeedSummaryOrBlank(feedItem: FeedItem) {
-    return feedItem.summary === '' ? '' : '[hr]' + feedItem.summary;
+    let numberOfDescription = Utils.getNumberOfDescription();
+    let summary;
+    if (numberOfDescription <= -1) {
+      summary = feedItem.summary;
+    } else if (numberOfDescription == 0) {
+      summary = '';
+    } else {
+      summary = feedItem.summary === '' ? '' : feedItem.summary.substr(0, numberOfDescription);
+    }
+    return summary === '' ? '' : '[hr]' + summary;
   }
   /**
    * determineFeedType
@@ -119,7 +129,7 @@ export default class RSS2Chatwork {
       return new Array();
     }
   }
-  
+
   private parseRSS10(document: GoogleAppsScript.XML_Service.Document) {
     let root = document.getRootElement();
     const rss = XmlService.getNamespace('http://purl.org/rss/1.0/');
@@ -130,9 +140,10 @@ export default class RSS2Chatwork {
     for (let i in items) {
       let link = items[i].getChild('link', rss).getText();
       link = Utils.decodeURIComponentSafety(link);
+      let title = items[i].getChild('title', rss);
       let description = items[i].getChild('description', rss);
       let item: FeedItem = {
-        title: items[i].getChild('title', rss).getText(),
+        title: Utils.getTextOrBlank(title),
         link: link,
         summary: Utils.getTextOrBlank(description),
         time: new Date(items[i].getChild('date', dc).getText())
@@ -152,8 +163,9 @@ export default class RSS2Chatwork {
       let link = item.getChild('link').getText();
       link = Utils.decodeURIComponentSafety(link);
       let description = item.getChild('description');
+      let title = item.getChild('title');
       let feedItem: FeedItem = {
-        title: item.getChild('title').getText(),
+        title: Utils.getTextOrBlank(title),
         link: link,
         summary: Utils.getTextOrBlank(description),
         time: new Date(this.getPubdate(item, parentPubDate).getText())
@@ -201,17 +213,12 @@ export default class RSS2Chatwork {
         let pubDate = entry[i].getChild('pubDate', atomNS).getText();
         time = Utils.toDate(pubDate);
       }
+      let title = entry[i].getChild('title', atomNS);
+      let content = entry[i].getChild('content', atomNS);
       let item: FeedItem = {
-        title: entry[i]
-          .getChild('title', atomNS)
-          .getText()
-          .replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ''),
+        title: Utils.getTextOrBlank(title),
         link: link,
-        summary: entry[i]
-          .getChild('content', atomNS)
-          .getText()
-          .replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '')
-          .replace(/&nbsp;|&raquo;|and more/g, ' '),
+        summary: Utils.getTextOrBlank(content).replace(/&nbsp;|&raquo;|and more/g, ' '),
         time: time
       };
       items.push(item);
