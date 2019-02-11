@@ -16,8 +16,10 @@ export default class RSS2Chatwork {
 
   /**
    * constructor
-   * @param roomId
-   * @param feedUrl
+   * @param roomId 
+   * @param feedUrl 
+   * @param lastUpdateDate 
+   * @param feedDesc 
    */
   constructor(roomId: string, feedUrl: string, lastUpdateDate: Date, feedDesc: string) {
     this.roomId = roomId;
@@ -83,7 +85,8 @@ export default class RSS2Chatwork {
     } else if (numberOfDescription == 0) {
       summary = '';
     } else {
-      summary = feedItem.summary === '' ? '' : feedItem.summary.substr(0, numberOfDescription);
+      summary =
+        feedItem.summary === '' ? '' : Utils.truncate(feedItem.summary, numberOfDescription);
     }
     return summary === '' ? '' : '[hr]' + summary;
   }

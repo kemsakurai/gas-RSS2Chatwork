@@ -25,7 +25,17 @@ export default class Utils {
   public static setNumberOfDescription(number: string): void {
     PropertiesService.getScriptProperties().setProperty('NUMBER_OF_DESCRIPTION', number);
   }
-
+  /**
+   * truncate
+   * @param value
+   * @param length
+   */
+  public static truncate(value: string, length: number): string {
+    if (value.length <= length) {
+      return value;
+    }
+    return value.substring(0, length) + '...';
+  }
   /**
    * getNumberOfDescription
    */
