@@ -1,6 +1,7 @@
 import Utils from './Utils';
 import RSS2Chatwork from './RSS2Chatwork';
-import { FeedItem } from './RSS2Chatwork';
+import { FeedItem } from './FeedParser';
+import FeedParser from './FeedParser';
 
 export const noticeUpdate = (): void => {
   let sheet: GoogleAppsScript.Spreadsheet.Sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
@@ -15,13 +16,13 @@ export const noticeUpdate = (): void => {
       lastUpdateDates.push('');
       continue;
     }
+    let feedParser: FeedParser = new FeedParser(feed[1]);
     let rss2Chatwork: RSS2Chatwork = new RSS2Chatwork(
       feed[2],
-      feed[1],
       feed[3] == '' ? Utils.getYesterday() : new Date(feed[3]),
       feed[0]
     );
-    let entries: FeedItem[] = rss2Chatwork.parseFeed();
+    let entries: FeedItem[] = feedParser.parseFeed();
     let lastUpdateDate: Date = rss2Chatwork.postMessage(entries);
     lastUpdateDates.push([lastUpdateDate]);
   }
