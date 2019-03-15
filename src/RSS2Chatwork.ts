@@ -77,7 +77,16 @@ export default class RSS2Chatwork {
         headers: { 'X-ChatWorkToken': this.token },
         payload: payload
       };
-      Utils.fetchAsJson('https://api.chatwork.com/v2/rooms/' + this.roomId + '/messages', options);
+      try {
+        Utils.fetchAsJson(
+          'https://api.chatwork.com/v2/rooms/' + this.roomId + '/messages',
+          options
+        );
+      } catch (e) {
+        if (e.errors == 'Rate limit exceeded') {
+          return updateDate;
+        }
+      }
       if (updateDate.getTime() <= feedItem.time.getTime()) {
         updateDate = feedItem.time;
       }

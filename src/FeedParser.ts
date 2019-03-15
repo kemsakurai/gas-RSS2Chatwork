@@ -22,16 +22,21 @@ export default class FeedParser {
    * parseFeed
    */
   public parseFeed(): FeedItem[] {
-    const document = Utils.fetchAsXmlDocument(this.feedUrl);
-    const feedType = this.determineFeedType(document);
-    if (feedType == 'atom') {
-      return this.parseAtom(document);
-    } else if (feedType == 'rss1') {
-      return this.parseRSS10(document);
-    } else if (feedType == 'rss2') {
-      return this.parseRSS20(document);
-    } else {
-      console.warn('Illegal feed format [URL]:%s', this.feedUrl);
+    try {
+      const document = Utils.fetchAsXmlDocument(this.feedUrl);
+      const feedType = this.determineFeedType(document);
+      if (feedType == 'atom') {
+        return this.parseAtom(document);
+      } else if (feedType == 'rss1') {
+        return this.parseRSS10(document);
+      } else if (feedType == 'rss2') {
+        return this.parseRSS20(document);
+      } else {
+        console.warn('Illegal feed format [URL]:%s', this.feedUrl);
+        return new Array();
+      }
+    } catch (e) {
+      console.warn(e);
       return new Array();
     }
   }

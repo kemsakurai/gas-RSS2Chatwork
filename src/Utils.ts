@@ -16,7 +16,25 @@ export default class Utils {
 
   public static fetchAsXmlDocument(url: string) {
     const response = UrlFetchApp.fetch(url);
-    return XmlService.parse(response.getContentText());
+    let result;
+    try {
+      result = XmlService.parse(response.getContentText());
+    } catch (e) {
+      let spStr = [
+        11, // 垂直タブ
+        8203 // ゼロ幅スペース
+      ];
+      let txtBefore = response.getContentText();
+      let txtAfter = '';
+      for (var i = 0; i < txtBefore.length; i++) {
+        var chr = txtBefore.charCodeAt(i);
+        if (spStr.indexOf(chr) == -1) {
+          txtAfter += String.fromCharCode(chr);
+        }
+      }
+      result = XmlService.parse(txtAfter);
+    }
+    return result;
   }
   /**
    * setNumberOfDescription
