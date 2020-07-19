@@ -1,4 +1,4 @@
-import Utils from './Utils';
+import Utils from "./Utils";
 
 type FeedItem = {
   title: string;
@@ -16,7 +16,10 @@ export default class FeedParser {
    */
   constructor(feedUrl: string) {
     this.feedUrl = feedUrl;
-    Utils.checkNotEmpty(this.feedUrl, 'feedUrl が 未設定です。feedUrl を設定してください。');
+    Utils.checkNotEmpty(
+      this.feedUrl,
+      "feedUrl が 未設定です。feedUrl を設定してください。"
+    );
   }
   /**
    * parseFeed
@@ -25,39 +28,42 @@ export default class FeedParser {
     try {
       const document = Utils.fetchAsXmlDocument(this.feedUrl);
       const feedType = this.determineFeedType(document);
-      if (feedType == 'atom') {
+      if (feedType == "atom") {
         return this.parseAtom(document);
-      } else if (feedType == 'rss1') {
+      } else if (feedType == "rss1") {
         return this.parseRSS10(document);
-      } else if (feedType == 'rss2') {
+      } else if (feedType == "rss2") {
         return this.parseRSS20(document);
       } else {
-        console.warn('Illegal feed format [URL]:%s', this.feedUrl);
-        return new Array();
+        console.warn("Illegal feed format [URL]:%s", this.feedUrl);
+        return [];
       }
     } catch (e) {
       console.warn(e);
-      return new Array();
+      return [];
     }
   }
 
   private parseRSS10(document: GoogleAppsScript.XML_Service.Document) {
-    let root = document.getRootElement();
-    const rss = XmlService.getNamespace('http://purl.org/rss/1.0/');
-    const dc = XmlService.getNamespace('dc', 'http://purl.org/dc/elements/1.1/');
-    let items = root.getChildren('item', rss);
-    let feedItems: FeedItem[] = new Array();
+    const root = document.getRootElement();
+    const rss = XmlService.getNamespace("http://purl.org/rss/1.0/");
+    const dc = XmlService.getNamespace(
+      "dc",
+      "http://purl.org/dc/elements/1.1/"
+    );
+    const items = root.getChildren("item", rss);
+    const feedItems: FeedItem[] = [];
 
-    for (let i in items) {
-      let link = items[i].getChild('link', rss).getText();
+    for (const i in items) {
+      let link = items[i].getChild("link", rss).getText();
       link = Utils.decodeURIComponentSafety(link);
-      let title = items[i].getChild('title', rss);
-      let description = items[i].getChild('description', rss);
-      let item: FeedItem = {
+      const title = items[i].getChild("title", rss);
+      const description = items[i].getChild("description", rss);
+      const item: FeedItem = {
         title: Utils.getTextOrBlank(title),
         link: link,
         summary: Utils.getTextOrBlank(description),
-        time: new Date(items[i].getChild('date', dc).getText())
+        time: new Date(items[i].getChild("date", dc).getText())
       };
       feedItems.push(item);
     }
@@ -65,17 +71,17 @@ export default class FeedParser {
   }
 
   private parseRSS20(document: GoogleAppsScript.XML_Service.Document) {
-    let root = document.getRootElement();
-    let items = root.getChild('channel').getChildren('item');
-    let feedItems: FeedItem[] = new Array();
-    let parentPubDate = root.getChild('channel').getChild('pubDate');
-    for (let i in items) {
-      let item = items[i];
-      let link = item.getChild('link').getText();
+    const root = document.getRootElement();
+    const items = root.getChild("channel").getChildren("item");
+    const feedItems: FeedItem[] = [];
+    const parentPubDate = root.getChild("channel").getChild("pubDate");
+    for (const i in items) {
+      const item = items[i];
+      let link = item.getChild("link").getText();
       link = Utils.decodeURIComponentSafety(link);
-      let description = item.getChild('description');
-      let title = item.getChild('title');
-      let feedItem: FeedItem = {
+      const description = item.getChild("description");
+      const title = item.getChild("title");
+      const feedItem: FeedItem = {
         title: Utils.getTextOrBlank(title),
         link: link,
         summary: Utils.getTextOrBlank(description),
@@ -94,42 +100,48 @@ export default class FeedParser {
     item: GoogleAppsScript.XML_Service.Element,
     parentPubDate: GoogleAppsScript.XML_Service.Element
   ) {
-    if (item.getChild('pubDate') != null) {
-      return item.getChild('pubDate');
+    if (item.getChild("pubDate") != null) {
+      return item.getChild("pubDate");
     }
-    const dc = XmlService.getNamespace('dc', 'http://purl.org/dc/elements/1.1/');
-    if (item.getChild('date', dc) != null) {
-      return item.getChild('date', dc);
+    const dc = XmlService.getNamespace(
+      "dc",
+      "http://purl.org/dc/elements/1.1/"
+    );
+    if (item.getChild("date", dc) != null) {
+      return item.getChild("date", dc);
     }
     return parentPubDate;
   }
 
   private parseAtom(document: GoogleAppsScript.XML_Service.Document) {
-    const atomNS = XmlService.getNamespace('http://www.w3.org/2005/Atom');
-    const entry = document.getRootElement().getChildren('entry', atomNS);
-    let items: FeedItem[] = new Array();
-    for (let i in entry) {
+    const atomNS = XmlService.getNamespace("http://www.w3.org/2005/Atom");
+    const entry = document.getRootElement().getChildren("entry", atomNS);
+    const items: FeedItem[] = [];
+    for (const i in entry) {
       let link = entry[i]
-        .getChild('link', atomNS)
-        .getAttribute('href')
+        .getChild("link", atomNS)
+        .getAttribute("href")
         .getValue();
       if (link.match(/&url=(.*)&ct=ga/)) {
         link = Utils.decodeURIComponentSafety(link.match(/&url=(.*)&ct=ga/)[1]);
       } else {
         link = Utils.decodeURIComponentSafety(link);
       }
-      let updated = entry[i].getChild('updated', atomNS).getText();
+      const updated = entry[i].getChild("updated", atomNS).getText();
       let time = Utils.toDate(updated);
-      if (time.toString() === 'Invalid Date') {
-        let pubDate = entry[i].getChild('pubDate', atomNS).getText();
+      if (time.toString() === "Invalid Date") {
+        const pubDate = entry[i].getChild("pubDate", atomNS).getText();
         time = Utils.toDate(pubDate);
       }
-      let title = entry[i].getChild('title', atomNS);
-      let content = entry[i].getChild('content', atomNS);
-      let item: FeedItem = {
+      const title = entry[i].getChild("title", atomNS);
+      const content = entry[i].getChild("content", atomNS);
+      const item: FeedItem = {
         title: Utils.getTextOrBlank(title),
         link: link,
-        summary: Utils.getTextOrBlank(content).replace(/&nbsp;|&raquo;|and more/g, ' '),
+        summary: Utils.getTextOrBlank(content).replace(
+          /&nbsp;|&raquo;|and more/g,
+          " "
+        ),
         time: time
       };
       items.push(item);
@@ -140,24 +152,26 @@ export default class FeedParser {
    * determineFeedType
    * @param document
    */
-  private determineFeedType(document: GoogleAppsScript.XML_Service.Document): string {
-    const atomNS = XmlService.getNamespace('http://www.w3.org/2005/Atom');
-    let entry = document.getRootElement().getChildren('entry', atomNS);
+  private determineFeedType(
+    document: GoogleAppsScript.XML_Service.Document
+  ): string {
+    const atomNS = XmlService.getNamespace("http://www.w3.org/2005/Atom");
+    const entry = document.getRootElement().getChildren("entry", atomNS);
     if (entry && entry.length > 0) {
-      return 'atom';
+      return "atom";
     }
-    const rssNS = XmlService.getNamespace('http://purl.org/rss/1.0/');
-    let item = document.getRootElement().getChildren('item', rssNS);
+    const rssNS = XmlService.getNamespace("http://purl.org/rss/1.0/");
+    const item = document.getRootElement().getChildren("item", rssNS);
     if (item && item.length > 0) {
-      return 'rss1';
+      return "rss1";
     }
-    let channel = document.getRootElement().getChild('channel');
+    const channel = document.getRootElement().getChild("channel");
     if (channel) {
-      let item = channel.getChildren('item');
+      const item = channel.getChildren("item");
       if (item && item.length > 0) {
-        return 'rss2';
+        return "rss2";
       }
     }
-    return 'other';
+    return "other";
   }
 }

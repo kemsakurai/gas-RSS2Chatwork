@@ -1,11 +1,11 @@
 const UTF8_URI = new RegExp(
-  '%[0-7][0-9A-F]|' +
-    '%C[2-9A-F]%[89AB][0-9A-F]|%D[0-9A-F]%[89AB][0-9A-F]|' +
-    '%E[0-F](?:%[89AB][0-9A-F]){2}|' +
-    '%F[0-7](?:%[89AB][0-9A-F]){3}|' +
-    '%F[89AB](?:%[89AB][0-9A-F]){4}|' +
-    '%F[CD](?:%[89AB][0-9A-F]){5}',
-  'ig'
+  "%[0-7][0-9A-F]|" +
+    "%C[2-9A-F]%[89AB][0-9A-F]|%D[0-9A-F]%[89AB][0-9A-F]|" +
+    "%E[0-F](?:%[89AB][0-9A-F]){2}|" +
+    "%F[0-7](?:%[89AB][0-9A-F]){3}|" +
+    "%F[89AB](?:%[89AB][0-9A-F]){4}|" +
+    "%F[CD](?:%[89AB][0-9A-F]){5}",
+  "ig"
 );
 
 export default class Utils {
@@ -20,14 +20,14 @@ export default class Utils {
     try {
       result = XmlService.parse(response.getContentText());
     } catch (e) {
-      let spStr = [
+      const spStr = [
         11, // 垂直タブ
         8203 // ゼロ幅スペース
       ];
-      let txtBefore = response.getContentText();
-      let txtAfter = '';
-      for (var i = 0; i < txtBefore.length; i++) {
-        var chr = txtBefore.charCodeAt(i);
+      const txtBefore = response.getContentText();
+      let txtAfter = "";
+      for (let i = 0; i < txtBefore.length; i++) {
+        const chr = txtBefore.charCodeAt(i);
         if (spStr.indexOf(chr) == -1) {
           txtAfter += String.fromCharCode(chr);
         }
@@ -41,7 +41,10 @@ export default class Utils {
    * @param number
    */
   public static setNumberOfDescription(number: string): void {
-    PropertiesService.getScriptProperties().setProperty('NUMBER_OF_DESCRIPTION', number);
+    PropertiesService.getScriptProperties().setProperty(
+      "NUMBER_OF_DESCRIPTION",
+      number
+    );
   }
   /**
    * truncate
@@ -52,14 +55,16 @@ export default class Utils {
     if (value.length <= length) {
       return value;
     }
-    return value.substring(0, length) + '...';
+    return value.substring(0, length) + "...";
   }
   /**
    * getNumberOfDescription
    */
   public static getNumberOfDescription(): number {
     let numberOfDescription = parseInt(
-      PropertiesService.getScriptProperties().getProperty('NUMBER_OF_DESCRIPTION')
+      PropertiesService.getScriptProperties().getProperty(
+        "NUMBER_OF_DESCRIPTION"
+      )
     );
     if (isNaN(numberOfDescription)) {
       numberOfDescription = -1;
@@ -71,28 +76,37 @@ export default class Utils {
    * @param token
    */
   public static setChatworkToken(token: string): void {
-    PropertiesService.getScriptProperties().setProperty('CHATWORK_TOKEN', token);
+    PropertiesService.getScriptProperties().setProperty(
+      "CHATWORK_TOKEN",
+      token
+    );
   }
   /**
    * getChatworkToken
    */
   public static getChatworkToken(): string {
-    return PropertiesService.getScriptProperties().getProperty('CHATWORK_TOKEN');
+    return PropertiesService.getScriptProperties().getProperty(
+      "CHATWORK_TOKEN"
+    );
   }
 
   /**
    * getYesterday
    */
   public static getYesterday(): Date {
-    let now: Date = new Date();
-    let yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    const now: Date = new Date();
+    const yesterday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 1
+    );
     return yesterday;
   }
   /**
    * checkNotEmpty
    */
   public static checkNotEmpty(value: string, message: string) {
-    if (typeof value === 'undefined' || value == '') {
+    if (typeof value === "undefined" || value == "") {
       throw new Error(message);
     }
   }
@@ -100,21 +114,21 @@ export default class Utils {
    * getRSSSheetName
    */
   public static getRSSSheetName(): string {
-    return 'RSS';
+    return "RSS";
   }
 
   /**
    * getRoomSheetName
    */
   public static getRoomSheetName(): string {
-    return 'Room';
+    return "Room";
   }
   /**
    * decodeURIComponentSafety
    * @param link
    */
   public static decodeURIComponentSafety(link: string): string {
-    let result = link.replace(UTF8_URI, function(whole) {
+    const result = link.replace(UTF8_URI, function(whole) {
       return decodeURIComponent(whole);
     });
     return result;
@@ -123,10 +137,10 @@ export default class Utils {
    * getTextOrBlank
    */
   public static getTextOrBlank(element): string {
-    let result = '';
+    let result = "";
     if (element) {
       // htmlタグを除去する
-      result = element.getText().replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '');
+      result = element.getText().replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, "");
     }
     return result;
   }
@@ -136,12 +150,12 @@ export default class Utils {
    */
   public static toDate(updated: string): Date {
     let time = new Date(updated);
-    if (time.toString() === 'Invalid Date') {
+    if (time.toString() === "Invalid Date") {
       time = new Date(
         updated
-          .replace('T', ' ')
-          .replace('Z', ' GMT')
-          .replace(/-/g, '/')
+          .replace("T", " ")
+          .replace("Z", " GMT")
+          .replace(/-/g, "/")
       );
     }
     return time;

@@ -1,5 +1,5 @@
-import Utils from './Utils';
-import { FeedItem } from './FeedParser';
+import Utils from "./Utils";
+import { FeedItem } from "./FeedParser";
 
 export default class RSS2Chatwork {
   roomId: string;
@@ -19,7 +19,10 @@ export default class RSS2Chatwork {
     this.lastUpdateDate = lastUpdateDate;
     this.feedDesc = feedDesc;
     this.token = Utils.getChatworkToken();
-    Utils.checkNotEmpty(this.token, 'token が 未設定です。token を設定してください。');
+    Utils.checkNotEmpty(
+      this.token,
+      "token が 未設定です。token を設定してください。"
+    );
   }
 
   /**
@@ -27,17 +30,19 @@ export default class RSS2Chatwork {
    * @param feedItem
    */
   private getFeedSummaryOrBlank(feedItem: FeedItem) {
-    let numberOfDescription = Utils.getNumberOfDescription();
+    const numberOfDescription = Utils.getNumberOfDescription();
     let summary;
     if (numberOfDescription <= -1) {
       summary = feedItem.summary;
     } else if (numberOfDescription == 0) {
-      summary = '';
+      summary = "";
     } else {
       summary =
-        feedItem.summary === '' ? '' : Utils.truncate(feedItem.summary, numberOfDescription);
+        feedItem.summary === ""
+          ? ""
+          : Utils.truncate(feedItem.summary, numberOfDescription);
     }
-    return summary === '' ? '' : '[hr]' + summary;
+    return summary === "" ? "" : "[hr]" + summary;
   }
 
   /**
@@ -46,44 +51,48 @@ export default class RSS2Chatwork {
    */
   public postMessage(feeds: FeedItem[]): Date {
     let updateDate: Date = this.lastUpdateDate;
-    for (let feedItem of feeds) {
+    for (const feedItem of feeds) {
       let message;
       // msレベルでの誤差が発生するので、1秒加算しておく
       if (this.lastUpdateDate.getTime() + 1000 >= feedItem.time.getTime()) {
         continue;
       } else {
-        let dateString: string = Utilities.formatDate(feedItem.time, 'JST', 'yyyy-MM-dd HH:mm:ss');
+        const dateString: string = Utilities.formatDate(
+          feedItem.time,
+          "JST",
+          "yyyy-MM-dd HH:mm:ss"
+        );
         message =
-          '[info][title]' +
+          "[info][title]" +
           feedItem.title +
-          '\n[' +
+          "\n[" +
           dateString +
-          '][/title]' +
+          "][/title]" +
           feedItem.link +
           this.getFeedSummaryOrBlank(feedItem) +
-          '[hr]' +
+          "[hr]" +
           this.feedDesc +
-          '[/info]';
+          "[/info]";
       }
-      if (message == '') {
+      if (message == "") {
         continue;
       }
-      let payload = {
+      const payload = {
         body: message,
-        self_unread: '1'
+        self_unread: "1"
       };
       const options: Object = {
-        method: 'post',
-        headers: { 'X-ChatWorkToken': this.token },
+        method: "post",
+        headers: { "X-ChatWorkToken": this.token },
         payload: payload
       };
       try {
         Utils.fetchAsJson(
-          'https://api.chatwork.com/v2/rooms/' + this.roomId + '/messages',
+          "https://api.chatwork.com/v2/rooms/" + this.roomId + "/messages",
           options
         );
       } catch (e) {
-        if (e.errors == 'Rate limit exceeded') {
+        if (e.errors == "Rate limit exceeded") {
           return updateDate;
         }
       }

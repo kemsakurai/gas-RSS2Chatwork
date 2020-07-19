@@ -1,5 +1,5 @@
-const KEY = 'trigger';
-const FUNCTION_NAME = 'noticeUpdate';
+const KEY = "trigger";
+const FUNCTION_NAME = "noticeUpdate";
 
 const weekDay = [
   ScriptApp.WeekDay.MONDAY,
@@ -29,7 +29,7 @@ export const updateSchedule = (formData: any): void => {
     } else if (data.automate == 1) {
       if (data.interval == 0) {
         deleteTrigger_();
-        let triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
+        const triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
           .timeBased()
           .everyMinutes(data.minitueOfHour)
           .create()
@@ -37,7 +37,7 @@ export const updateSchedule = (formData: any): void => {
         setTrigger_(triggerId);
       } else if (data.interval == 1) {
         deleteTrigger_();
-        let triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
+        const triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
           .timeBased()
           .everyHours(1)
           .create()
@@ -45,7 +45,7 @@ export const updateSchedule = (formData: any): void => {
         setTrigger_(triggerId);
       } else if (data.interval == 2) {
         deleteTrigger_();
-        let triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
+        const triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
           .timeBased()
           .atHour(data.hourOfDay)
           .everyDays(1)
@@ -55,7 +55,7 @@ export const updateSchedule = (formData: any): void => {
         setTrigger_(triggerId);
       } else if (data.interval == 3) {
         deleteTrigger_();
-        let triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
+        const triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
           .timeBased()
           .onWeekDay(weekDay[data.dayOfWeek])
           .atHour(data.hourOfDay)
@@ -65,7 +65,7 @@ export const updateSchedule = (formData: any): void => {
         setTrigger_(triggerId);
       } else if (data.interval == 4) {
         deleteTrigger_();
-        var triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
+        const triggerId = ScriptApp.newTrigger(FUNCTION_NAME)
           .timeBased()
           .onMonthDay(data.dayOfMonth)
           .atHour(data.hourOfDay)
@@ -74,7 +74,7 @@ export const updateSchedule = (formData: any): void => {
           .getUniqueId();
         setTrigger_(triggerId);
       } else {
-        throw new Error('Illegal Argments...');
+        throw new Error("Illegal Argments...");
       }
     }
   }
@@ -82,30 +82,30 @@ export const updateSchedule = (formData: any): void => {
 
 //serializeArrayをjsonに変換する
 function toJson_(formData): FormData {
-  var result = {};
-  var automateValue = 0;
+  const result = {};
+  let automateValue = 0;
   formData.forEach(function(elem, i) {
-    if (elem['name'] == 'automate' && elem['value'] == 1) {
+    if (elem["name"] == "automate" && elem["value"] == 1) {
       automateValue = 1;
     }
     result[elem.name] = elem.value;
   });
-  result['automate'] = automateValue;
+  result["automate"] = automateValue;
 
   const data: FormData = {
-    automate: result['automate'],
-    interval: result['interval'],
-    hourOfDay: result['hourOfDay'],
-    dayOfWeek: result['dayOfWeek'],
-    dayOfMonth: result['dayOfMonth'],
-    minitueOfHour: result['minitueOfHour']
+    automate: result["automate"],
+    interval: result["interval"],
+    hourOfDay: result["hourOfDay"],
+    dayOfWeek: result["dayOfWeek"],
+    dayOfMonth: result["dayOfMonth"],
+    minitueOfHour: result["minitueOfHour"]
   };
   return data;
 }
 
 //指定したkeyに保存されているトリガーIDを使って、トリガーを削除する
 function deleteTrigger_() {
-  var triggerId = PropertiesService.getScriptProperties().getProperty(KEY);
+  const triggerId = PropertiesService.getScriptProperties().getProperty(KEY);
   if (!triggerId) return;
   ScriptApp.getProjectTriggers()
     .filter(function(trigger) {
