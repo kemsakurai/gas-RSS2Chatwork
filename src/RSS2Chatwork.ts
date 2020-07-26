@@ -81,7 +81,7 @@ export default class RSS2Chatwork {
         body: message,
         self_unread: "1"
       };
-      const options: Object = {
+      const options: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
         method: "post",
         headers: { "X-ChatWorkToken": this.token },
         payload: payload

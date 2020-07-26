@@ -9,12 +9,17 @@ const UTF8_URI = new RegExp(
 );
 
 export default class Utils {
-  public static fetchAsJson(url: string, requestOptions: any) {
+  public static fetchAsJson(
+    url: string,
+    requestOptions: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any {
     const response = UrlFetchApp.fetch(url, requestOptions);
     return JSON.parse(response.getContentText());
   }
-
-  public static fetchAsXmlDocument(url: string) {
+  public static fetchAsXmlDocument(
+    url: string
+  ): GoogleAppsScript.XML_Service.Document {
     const response = UrlFetchApp.fetch(url);
     let result;
     try {
@@ -105,7 +110,7 @@ export default class Utils {
   /**
    * checkNotEmpty
    */
-  public static checkNotEmpty(value: string, message: string) {
+  public static checkNotEmpty(value: string, message: string): void {
     if (typeof value === "undefined" || value == "") {
       throw new Error(message);
     }
@@ -136,7 +141,9 @@ export default class Utils {
   /**
    * getTextOrBlank
    */
-  public static getTextOrBlank(element): string {
+  public static getTextOrBlank(
+    element: GoogleAppsScript.XML_Service.Element
+  ): string {
     let result = "";
     if (element) {
       // htmlタグを除去する

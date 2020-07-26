@@ -20,6 +20,7 @@ type FormData = {
   minitueOfHour: number;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
 export const updateSchedule = (formData: any): void => {
   const data: FormData = toJson_(formData);
   Logger.log(data);
@@ -84,7 +85,7 @@ export const updateSchedule = (formData: any): void => {
 function toJson_(formData): FormData {
   const result = {};
   let automateValue = 0;
-  formData.forEach(function(elem, i) {
+  formData.forEach(function(elem) {
     if (elem["name"] == "automate" && elem["value"] == 1) {
       automateValue = 1;
     }

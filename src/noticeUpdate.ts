@@ -13,7 +13,9 @@ export const noticeUpdate = (): void => {
     sheet.getLastRow() - 1,
     4
   );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const feedList: any[][] = range.getValues();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const lastUpdateDates: any[] = [];
   for (const feed of feedList) {
     // roomId、feedUrl の設定がなければ、処理の対象外

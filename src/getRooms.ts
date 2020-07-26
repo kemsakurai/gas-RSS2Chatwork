@@ -5,7 +5,7 @@ export const getRooms = (): void => {
 
   const token: string = Utils.getChatworkToken();
   Utils.checkNotEmpty(token, "token が 未設定です。token を設定してください。");
-  const options: Object = {
+  const options: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
     method: "get",
     headers: { "X-ChatWorkToken": token }
   };
